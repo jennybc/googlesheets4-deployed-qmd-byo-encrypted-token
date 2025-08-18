@@ -1,0 +1,64 @@
+---
+title: "Read a Google Sheet with googlesheets4"
+output:
+  html_document:
+    theme:
+      version: 5
+resource_files:
+- .secrets/gs4-read-only-token.rds
+---
+
+Scenario: BYO encrypted user token
+
+```{r setup}
+#| include: false
+can_decrypt <- gargle::secret_has_key("GOOGLEDRIVE_DEPLOY_DEMO_KEY")
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = can_decrypt
+)
+```
+
+```{r}
+#| eval: !expr '!can_decrypt'
+#| echo: false
+#| output: asis
+cat("*Decryption key is unavailable, so no code will be evaluated.*")
+```
+
+The following chunk reads the stored token from file, using the environment variable `"GOOGLEDRIVE_DEPLOY_DEMO_KEY"` to decrypt it, and tells googlesheets4 to use it.
+
+```{r}
+library(googlesheets4)
+
+try(
+  gs4_auth(
+    token = gargle::secret_read_rds(
+      ".secrets/gs4-read-only-token.rds",
+      "GOOGLEDRIVE_DEPLOY_DEMO_KEY"
+    )
+  )
+)
+```
+
+We wrap that in `try()` to guard against the scenario where the token *can* be decrypted, but then it can't be refreshed.
+If auth has been successful, the `gs4_user()` call below reveals details about the account associated with the cached token.
+If auth has not been successful, `gs4_user()` will throw an error.
+Other functions that can be helpful for confirming the validity of a re-loaded token are `gargle::token_tokeninfo()` and `gargle::token_userinfo()`.
+
+This Quarto document reads Google Sheets on behalf of this user:
+
+```{r error = TRUE}
+(whoami <- gs4_user())
+```
+
+## Read a Sheet
+
+```{r}
+current_roster <- read_sheet(
+  "https://docs.google.com/spreadsheets/d/1JtE6NpwCx7x9ni-I_KYwCba63wo6LeJ6Z2CyYx_3Qss/edit?gid=0"
+)
+current_roster
+```
