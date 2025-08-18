@@ -18,7 +18,9 @@ options(gargle_oauth_client_type = "web")
 
 # explicit auth with:
 # * intended email (= user)
-# * intended scopes
+# * intended, minimal scopes
+# * `cache = FALSE`: Because we will soon write the encrypted token to disk
+#   ourselves (see below).
 # * `use_oob = TRUE`: This is a clunkier process than the usual desktop
 #   experience, but creates a token more suitable for the server.
 gs4_auth(
@@ -37,7 +39,9 @@ if (inherits(token, "request")) {
   token <- token$auth_token
 }
 
-# the env var must already exist (specify the name of any env var here)
+# The env var must already exist!
+# Specify the name of any env var here, but be consistent everywhere.
+# Env var must exist, with same value, locally and on the server.
 gargle::secret_write_rds(
   token,
   ".secrets/gs4-read-only-token.rds",
