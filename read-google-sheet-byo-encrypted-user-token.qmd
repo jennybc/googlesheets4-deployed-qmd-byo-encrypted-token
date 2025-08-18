@@ -50,13 +50,15 @@ Other functions that can be helpful for confirming the validity of a re-loaded t
 
 This Quarto document reads Google Sheets on behalf of this user:
 
-```{r error = TRUE}
+```{r}
+#| error: true
 (whoami <- gs4_user())
 ```
 
 ## Read a Sheet
 
 ```{r}
+#| error: true
 current_roster <- read_sheet(
   "https://docs.google.com/spreadsheets/d/1JtE6NpwCx7x9ni-I_KYwCba63wo6LeJ6Z2CyYx_3Qss/edit?gid=0"
 )
