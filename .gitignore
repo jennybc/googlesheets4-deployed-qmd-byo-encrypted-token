@@ -5,8 +5,6 @@
 .DS_Store
 .quarto
 *.html
-renv*
 .posit
 .secrets
 libs
-.Rprofile
