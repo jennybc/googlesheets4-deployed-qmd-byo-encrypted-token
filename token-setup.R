@@ -12,22 +12,18 @@ dir.create(".secrets")
 # one of the built-in tidyverse oauth clients
 gs4_oauth_client()
 
-# indicate that we want to use a "web" oauth client, because that is what
-# must be used on the *server* where we are deploying
-options(gargle_oauth_client_type = "web")
-
 # explicit auth with:
 # * intended email (= user)
 # * intended, minimal scopes
 # * `cache = FALSE`: Because we will soon write the encrypted token to disk
 #   ourselves (see below).
-# * `use_oob = TRUE`: This is a clunkier process than the usual desktop
-#   experience, but creates a token more suitable for the server.
+# No need to set `use_oob` or `gargle_oauth_client_type`. The deployed doc uses
+# this stored token directly, so it never gets a new token or searches a cache,
+# which is when those settings matter.
 gs4_auth(
   "jenny@posit.co",
   scopes = "spreadsheets.readonly",
-  cache = FALSE,
-  use_oob = TRUE
+  cache = FALSE
 )
 
 # confirm you are logged in with the intended identity
